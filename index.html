@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Happy Birthday ✨</title>
+
+<style>
+*{margin:0;padding:0;box-sizing:border-box;}
+
+body{
+  font-family:'Poppins',sans-serif;
+  background:linear-gradient(135deg,#ffdee9,#b5fffc);
+  overflow:hidden;
+}
+
+.page{
+  width:100vw;
+  height:100vh;
+  display:none;
+  align-items:center;
+  justify-content:center;
+  flex-direction:column;
+  text-align:center;
+  padding:20px;
+}
+.page.active{display:flex;}
+
+h1,h2{color:#ff4d6d;margin-bottom:12px;}
+p{max-width:700px;font-size:1.15rem;line-height:1.8}
+
+.btn{
+  margin-top:25px;
+  padding:12px 28px;
+  background:linear-gradient(135deg,#ff4d6d,#ff8fab);
+  color:#fff;
+  border:none;
+  border-radius:30px;
+  cursor:pointer;
+  font-size:1rem;
+  transition:.3s;
+}
+.btn:hover{transform:translateY(-4px) scale(1.05);box-shadow:0 12px 25px rgba(255,77,109,.5)}
+.btn:active{transform:scale(.95)}
+
+/* IMAGE ACCORDION */
+.gallery{display:flex;gap:20px;margin-top:30px;}
+
+.card{
+  width:140px;
+  height:360px;
+  border-radius:20px;
+  overflow:hidden;
+  cursor:pointer;
+  position:relative;
+  transition:all .8s ease;
+  box-shadow:0 15px 30px rgba(0,0,0,.25);
+  filter:grayscale(40%) blur(1px);
+  opacity:.5;
+}
+
+.card img{
+  width:100%;
+  height:100%;
+  object-fit:cover;
+  transition:.8s;
+  opacity:0;
+  transform:scale(1.1);
+}
+
+.card.active{width:260px;filter:none;opacity:1;}
+.card.active img{opacity:1;transform:scale(1.08);}
+
+.card-message{
+  position:absolute;
+  inset:0;
+  background:transparent;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  justify-content:center;
+  color:#fff;
+  font-size:1.05rem;
+}
+
+.card-message span{
+  background:linear-gradient(135deg, rgba(255,77,109,0.75), rgba(255,143,171,0.75));
+  padding:12px 18px;
+  border-radius:14px;
+  backdrop-filter:blur(6px);
+}
+
+.card-message::before{
+  content:'❤';
+  font-size:28px;
+  margin-bottom:12px;
+  animation:pulse 2s infinite;
+}
+
+@keyframes pulse{
+  0%,100%{transform:scale(1);opacity:.7}
+  50%{transform:scale(1.2);opacity:1}
+}
+
+/* FINAL MESSAGE */
+.full-message{
+  width:100vw;
+  height:100vh;
+  background:linear-gradient(135deg, rgba(255,182,193,0.35), rgba(255,105,180,0.25), rgba(181,255,252,0.35));
+  padding:60px 120px;
+  display:flex;
+  flex-direction:column;
+  justify-content:center;
+}
+
+.landscape-text{display:flex;gap:60px;justify-content:center;text-align:center;}
+.landscape-text p{max-width:500px}
+
+/* STARS */
+.star{position:absolute;color:rgba(255,255,255,.9);animation:twinkle 3s infinite ease-in-out;pointer-events:none}
+@keyframes twinkle{0%,100%{opacity:.2;transform:scale(.8)}50%{opacity:1;transform:scale(1.3)}}
+
+/* COUNTDOWN */
+.countdown-box{margin-top:15px;font-size:1.2rem;color:#ff4d6d;font-weight:600}
+
+/* CONFETTI */
+.confetti{position:fixed;top:-10px;width:8px;height:14px;opacity:.9;animation:confettiFall 5s linear forwards;z-index:999}
+@keyframes confettiFall{0%{transform:translateY(0) rotate(0deg)}100%{transform:translateY(110vh) rotate(720deg);opacity:0}}
+</style>
+</head>
+<body>
+
+<audio id="bgMusic" src="music.mp3" loop></audio>
+
+<div class="page active">
+  <h1>🎂 Birthday Countdown</h1>
+  <h2>For Iram 💖</h2>
+  <p>Something special is waiting for <strong>2 March 2026</strong></p>
+  <div class="countdown-box" id="countdown"></div>
+  <button class="btn" id="enterBtn">Enter the Surprise 🌸</button>
+</div>
+
+<div class="page">
+  <h2>Moments of You 💞</h2>
+  <p>Touch a memory… the rest will softly fade.</p>
+
+  <div class="gallery">
+    <div class="card active" onclick="activate(this)"><img src="photo1.jpg"><div class="card-message"><span>Some smiles feel safe.</span></div></div>
+    <div class="card" onclick="activate(this)"><img src="photo2.jpg"><div class="card-message"><span>Some people calm the noise.</span></div></div>
+    <div class="card" onclick="activate(this)"><img src="photo3.jpg"><div class="card-message"><span>Some beauty just exists.</span></div></div>
+    <div class="card" onclick="activate(this)"><img src="photo4.jpg"><div class="card-message"><span>Some moments stay forever.</span></div></div>
+  </div>
+
+  <button class="btn" onclick="nextPage()">One Last Thing 💌</button>
+</div>
+
+<div class="page">
+  <div class="full-message">
+    <h1>💖 A New Beginning 💖</h1>
+    <div class="landscape-text">
+      <p>Dear Iram,<br><br>You became important to me quietly — in smiles, in pauses, in moments I didn’t plan.<br><br>I don’t promise perfection, but I promise presence, patience, and a heart that chooses you gently.</p>
+      <p>If someday you choose to walk forward with someone who truly cares, I would be honoured if that someone could be me.<br><br>Happy Birthday, Iram 🌸<br>— With a hopeful heart 💖</p>
+    </div>
+  </div>
+</div>
+
+<script>
+let current=0;
+const pages=document.querySelectorAll('.page');
+const countdownEl=document.getElementById('countdown');
+const enterBtn=document.getElementById('enterBtn');
+const birthday=new Date('March 2, 2026 00:00:00').getTime();
+
+// LOCKED until birthday
+enterBtn.disabled = true;
+enterBtn.style.opacity = '0.5';
+enterBtn.style.cursor = 'not-allowed';;
+
+setInterval(()=>{
+  const diff=birthday-Date.now();
+  if(diff<=0){
+    countdownEl.innerHTML='🎉 Happy Birthday Iram! 🎉';
+    startBirthdaySurprise();
+    enterBtn.disabled = false;
+    enterBtn.style.opacity = '1';
+    enterBtn.style.cursor = 'pointer';
+    enterBtn.onclick = () => {
+      document.getElementById('bgMusic').play();
+      nextPage();
+    };
+    return;
+  }
+  const d=Math.floor(diff/(1000*60*60*24));
+  const h=Math.floor((diff/(1000*60*60))%24);
+  const m=Math.floor((diff/(1000*60))%60);
+  const s=Math.floor((diff/1000)%60);
+  countdownEl.innerHTML=`${d}d ${h}h ${m}m ${s}s`;
+},1000);
+
+function nextPage(){pages[current].classList.remove('active');current++;pages[current].classList.add('active')}
+function activate(el){document.querySelectorAll('.card').forEach(c=>c.classList.remove('active'));el.classList.add('active')}
+
+function startBirthdaySurprise(){
+  if(document.body.classList.contains('birthday'))return;
+  document.body.classList.add('birthday');
+  for(let i=0;i<120;i++){
+    const c=document.createElement('div');
+    c.className='confetti';
+    c.style.left=Math.random()*100+'vw';
+    c.style.backgroundColor=`hsl(${Math.random()*360},80%,65%)`;
+    document.body.appendChild(c);
+    setTimeout(()=>c.remove(),6000);
+  }
+}
+
+for(let i=0;i<40;i++){
+  const star=document.createElement('div');
+  star.className='star';
+  star.innerHTML='✦';
+  star.style.left=Math.random()*100+'vw';
+  star.style.top=Math.random()*100+'vh';
+  star.style.fontSize=(8+Math.random()*10)+'px';
+  document.body.appendChild(star);
+}
+</script>
+</body>
+</html>
